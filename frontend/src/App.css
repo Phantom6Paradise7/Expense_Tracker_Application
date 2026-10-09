@@ -1,0 +1,208 @@
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.navbar h2 {
+  margin: 0;
+  color: #3b5bdb;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.role-tag {
+  background-color: #eef1fd;
+  color: #3b5bdb;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-left: 0.4rem;
+}
+
+/* Auth pages */
+.auth-page {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.auth-form {
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.auth-form h2 {
+  margin: 0 0 0.5rem;
+}
+
+.auth-form input,
+.auth-form select {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.auth-switch {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Dashboard */
+.dashboard {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.dashboard-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.5rem 0 1rem;
+}
+
+/* Expense form */
+.expense-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.expense-form input,
+.expense-form select {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  flex: 1 1 160px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.secondary-btn {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.secondary-btn:hover {
+  background-color: #d1d5db;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filters select {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+/* Expense list */
+.expense-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.expense-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.expense-top-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.expense-top-row h3 {
+  margin: 0;
+}
+
+.category-tag {
+  background-color: #eef1fd;
+  color: #3b5bdb;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.expense-info .amount {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.3rem 0 0;
+}
+
+.expense-info .date,
+.expense-info .owner {
+  margin: 0.15rem 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.expense-info .description {
+  margin: 0.3rem 0 0;
+  color: #374151;
+}
+
+.expense-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.danger-btn {
+  background-color: #dc2626;
+}
+
+.danger-btn:hover {
+  background-color: #b91c1c;
+}
+
+/* Status text */
+.error-text {
+  color: #dc2626;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+}
+
+.empty-text,
+.status-text {
+  color: #6b7280;
+  text-align: center;
+  margin-top: 2rem;
+}
