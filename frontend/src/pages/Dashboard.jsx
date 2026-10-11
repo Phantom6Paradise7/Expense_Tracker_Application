@@ -10,6 +10,7 @@ function Dashboard({ user }) {
   const [error, setError] = useState('');
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
   const [editingExpense, setEditingExpense] = useState(null);
 
   useEffect(() => {
@@ -39,7 +40,9 @@ function Dashboard({ user }) {
   const handleUpdate = async (id, expenseData) => {
     try {
       const updated = await apiRequest(`/expenses/${id}`, 'PUT', expenseData);
-      setExpenses((prev) => prev.map((exp) => (exp._id === id ? updated : exp)));
+      setExpenses((prev) =>
+        prev.map((exp) => (exp._id === id ? updated : exp))
+      );
       setEditingExpense(null);
     } catch (err) {
       setError(err.message);
@@ -60,16 +63,40 @@ function Dashboard({ user }) {
   };
 
   const visibleExpenses = expenses.filter((exp) => {
-    const matchCategory = category === 'all' || exp.category === category;
-    const matchSearch = (exp.title || '')
+    const matchesCategory =
+      category === 'all' || exp.category === category;
+
+    const matchesSearch = (exp.title || '')
       .toLowerCase()
       .includes(search.trim().toLowerCase());
 
-    return matchCategory && matchSearch;
+    return matchesCategory && matchesSearch;
   });
 
   const total = visibleExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+  const sortedExpenses = [...visibleExpenses].sort((a, b) => {
+    if (sortBy === 'newest') {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+
+    if (sortBy === 'oldest') {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
+
+    if (sortBy === 'high-low') {
+      return Number(b.amount) - Number(a.amount);
+    }
+
+    if (sortBy === 'low-high') {
+      return Number(a.amount) - Number(b.amount);
+    }
+
+    return 0;
+  });
+
   const expenseCount = visibleExpenses.length;
+
   if (loading) {
     return <h2 className="status-text">Loading...</h2>;
   }
@@ -104,8 +131,22 @@ function Dashboard({ user }) {
         </div>
       </div>
 
+      <div className="sort-toolbar">
+        <label htmlFor="sortBy">Sort by: </label>
+        <select
+          id="sortBy"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="high-low">Amount high-low</option>
+          <option value="low-high">Amount low-high</option>
+        </select>
+      </div>
+
       <ExpenseList
-        expenses={visibleExpenses}
+        expenses={sortedExpenses}
         onEdit={setEditingExpense}
         onDelete={handleDelete}
       />
