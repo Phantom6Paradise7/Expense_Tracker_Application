@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import ExpenseForm from '../components/ExpenseForm';
 import ExpenseList from '../components/ExpenseList';
@@ -9,6 +10,7 @@ function Dashboard({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [category, setCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const [editingExpense, setEditingExpense] = useState(null);
 
   useEffect(() => {
@@ -58,6 +60,26 @@ function Dashboard({ user }) {
     return category === 'all' || exp.category === category;
   });
 
+  const sortedExpenses = [...visibleExpenses].sort((a, b) => {
+    if (sortBy === 'newest') {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+
+    if (sortBy === 'oldest') {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
+
+    if (sortBy === 'high-low') {
+      return Number(b.amount) - Number(a.amount);
+    }
+
+    if (sortBy === 'low-high') {
+      return Number(a.amount) - Number(b.amount);
+    }
+
+    return 0;
+  });
+
   const total = visibleExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   if (loading) {
@@ -79,10 +101,29 @@ function Dashboard({ user }) {
 
       <div className="dashboard-toolbar">
         <Filters category={category} setCategory={setCategory} />
+
         <h3>Total: ${total.toFixed(2)}</h3>
       </div>
 
-      <ExpenseList expenses={visibleExpenses} onEdit={setEditingExpense} onDelete={handleDelete} />
+      <div className="sort-toolbar">
+        <label htmlFor="sortBy">Sort by: </label>
+        <select
+          id="sortBy"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="high-low">Amount high-low</option>
+          <option value="low-high">Amount low-high</option>
+        </select>
+      </div>
+
+      <ExpenseList
+        expenses={sortedExpenses}
+        onEdit={setEditingExpense}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }
