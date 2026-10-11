@@ -69,7 +69,7 @@ function Dashboard({ user }) {
   });
 
   const total = visibleExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-
+  const expenseCount = visibleExpenses.length;
   if (loading) {
     return <h2 className="status-text">Loading...</h2>;
   }
@@ -98,7 +98,10 @@ function Dashboard({ user }) {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <h3>Total: ${total.toFixed(2)}</h3>
+        <div>
+          <h3>Total: ${total.toFixed(2)}</h3>
+          <p>Showing {expenseCount} expenses.</p>
+        </div>
       </div>
 
       <ExpenseList
