@@ -8,8 +8,10 @@ function ExpenseForm({ onAdd, onUpdate, editingExpense, cancelEdit }) {
   const [category, setCategory] = useState('food');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
+  const [errors, setErrors] = useState({});
 
   // Fill the form when an expense is picked for editing
+  
   useEffect(() => {
     if (editingExpense) {
       setTitle(editingExpense.title);
@@ -17,6 +19,7 @@ function ExpenseForm({ onAdd, onUpdate, editingExpense, cancelEdit }) {
       setCategory(editingExpense.category);
       setDate(editingExpense.date.slice(0, 10));
       setDescription(editingExpense.description || '');
+      setErrors({})
     }
   }, [editingExpense]);
 
@@ -26,10 +29,57 @@ function ExpenseForm({ onAdd, onUpdate, editingExpense, cancelEdit }) {
     setCategory('food');
     setDate('');
     setDescription('');
+    setErrors({});
+  };
+  
+  const clearError = (field) => {
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+  
+  const validate = () => {
+    const newErrors = {};
+
+    if (!title.trim()){
+      newErrors.title = 'Title is required.';
+    }
+
+    const amountText = String(amount).trim();
+    if(!amountText) {
+      newErrors.amount = 'Amount is required.';
+    } else if (!(Number(amountText) > 0)) {
+      newErrors.amount = 'Amount must be greater than 0.'
+    } else if (amountText.includes('.') && amountText.split('.')[1].length > 2){
+      newErrors.amount = 'Amount can have at most 2 decimal places.';
+    }
+
+    if (!date){
+      newErrors.date = 'Date is required.';
+    } else {
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+      if (date > today){
+        newErrors.date = 'Date cannot be in the future.';
+      }
+    }
+
+    return newErrors;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const validationErrors = validate();
+
+    if (Object.keys(validationErrors).length > 0){
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
 
     const expenseData = {
       title,
@@ -49,25 +99,38 @@ function ExpenseForm({ onAdd, onUpdate, editingExpense, cancelEdit }) {
   };
 
   return (
-    <form className="expense-form" onSubmit={handleSubmit}>
+    <form className="expense-form" onSubmit={handleSubmit} noValidate>
+      <div className="field">
       <input
         type="text"
         placeholder="Title"
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={(e) => {
+          setTitle(e.target.value);
+          clearError('title')
+        }}
         required
       />
+      {errors.title && <p className="field-error">{errors.title}</p>}
+      </div>
 
+      <div className="field">
       <input
         type="number"
         placeholder="Amount"
         value={amount}
-        onChange={(e) => setAmount(e.target.value)}
+        onChange={(e) => {
+          setAmount(e.target.value)
+          clearError('amount');
+        }}
         min="0"
         step="0.01"
         required
       />
-
+      {errors.amount && <p className="field-error">{errors.amount}</p>}
+      </div>
+        
+      <div className="field">
       <select value={category} onChange={(e) => setCategory(e.target.value)}>
         {categories.map((c) => (
           <option key={c} value={c}>
@@ -75,13 +138,20 @@ function ExpenseForm({ onAdd, onUpdate, editingExpense, cancelEdit }) {
           </option>
         ))}
       </select>
+      </div>
 
+      <div className="field">
       <input
         type="date"
         value={date}
-        onChange={(e) => setDate(e.target.value)}
+        onChange={(e) => {
+          setDate(e.target.value);
+          clearError("date");
+        }}
         required
       />
+      {errors.date && <p className="field-error">{errors.date}</p>}
+      </div>
 
       <input
         type="text"
