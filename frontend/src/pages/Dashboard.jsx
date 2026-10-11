@@ -9,6 +9,7 @@ function Dashboard({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [category, setCategory] = useState('all');
+  const [search, setSearch] = useState('');
   const [editingExpense, setEditingExpense] = useState(null);
 
   useEffect(() => {
@@ -55,7 +56,12 @@ function Dashboard({ user }) {
   };
 
   const visibleExpenses = expenses.filter((exp) => {
-    return category === 'all' || exp.category === category;
+    const matchCategory = category === 'all' || exp.category === category;
+    const matchSearch = (exp.title || '')
+      .toLowerCase()
+      .includes(search.trim().toLowerCase());
+
+    return matchCategory && matchSearch;
   });
 
   const total = visibleExpenses.reduce((sum, exp) => sum + exp.amount, 0);
@@ -79,10 +85,23 @@ function Dashboard({ user }) {
 
       <div className="dashboard-toolbar">
         <Filters category={category} setCategory={setCategory} />
+
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by expense title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
         <h3>Total: ${total.toFixed(2)}</h3>
       </div>
 
-      <ExpenseList expenses={visibleExpenses} onEdit={setEditingExpense} onDelete={handleDelete} />
+      <ExpenseList
+        expenses={visibleExpenses}
+        onEdit={setEditingExpense}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

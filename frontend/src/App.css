@@ -226,3 +226,9 @@
   width: 100%;
   box-sizing: border-box;
 }
+
+.search-input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
