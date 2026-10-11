@@ -47,6 +47,10 @@ function Dashboard({ user }) {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure?")) {
+      return;
+    }
+
     try {
       await apiRequest(`/expenses/${id}`, 'DELETE');
       setExpenses((prev) => prev.filter((exp) => exp._id !== id));
