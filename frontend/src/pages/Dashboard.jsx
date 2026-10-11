@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import ExpenseForm from '../components/ExpenseForm';
 import ExpenseList from '../components/ExpenseList';
@@ -10,6 +9,7 @@ function Dashboard({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [category, setCategory] = useState('all');
+  const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [editingExpense, setEditingExpense] = useState(null);
 
@@ -40,7 +40,9 @@ function Dashboard({ user }) {
   const handleUpdate = async (id, expenseData) => {
     try {
       const updated = await apiRequest(`/expenses/${id}`, 'PUT', expenseData);
-      setExpenses((prev) => prev.map((exp) => (exp._id === id ? updated : exp)));
+      setExpenses((prev) =>
+        prev.map((exp) => (exp._id === id ? updated : exp))
+      );
       setEditingExpense(null);
     } catch (err) {
       setError(err.message);
@@ -57,8 +59,17 @@ function Dashboard({ user }) {
   };
 
   const visibleExpenses = expenses.filter((exp) => {
-    return category === 'all' || exp.category === category;
+    const matchesCategory =
+      category === 'all' || exp.category === category;
+
+    const matchesSearch = (exp.title || '')
+      .toLowerCase()
+      .includes(search.trim().toLowerCase());
+
+    return matchesCategory && matchesSearch;
   });
+
+  const total = visibleExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
   const sortedExpenses = [...visibleExpenses].sort((a, b) => {
     if (sortBy === 'newest') {
@@ -80,8 +91,6 @@ function Dashboard({ user }) {
     return 0;
   });
 
-  const total = visibleExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-
   if (loading) {
     return <h2 className="status-text">Loading...</h2>;
   }
@@ -101,6 +110,14 @@ function Dashboard({ user }) {
 
       <div className="dashboard-toolbar">
         <Filters category={category} setCategory={setCategory} />
+
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search by expense title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
 
         <h3>Total: ${total.toFixed(2)}</h3>
       </div>
