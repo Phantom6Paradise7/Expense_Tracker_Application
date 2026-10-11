@@ -50,6 +50,10 @@ function Dashboard({ user }) {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure?")) {
+      return;
+    }
+
     try {
       await apiRequest(`/expenses/${id}`, 'DELETE');
       setExpenses((prev) => prev.filter((exp) => exp._id !== id));
@@ -91,6 +95,8 @@ function Dashboard({ user }) {
     return 0;
   });
 
+  const expenseCount = visibleExpenses.length;
+
   if (loading) {
     return <h2 className="status-text">Loading...</h2>;
   }
@@ -119,7 +125,10 @@ function Dashboard({ user }) {
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <h3>Total: ${total.toFixed(2)}</h3>
+        <div>
+          <h3>Total: ${total.toFixed(2)}</h3>
+          <p>Showing {expenseCount} expenses.</p>
+        </div>
       </div>
 
       <div className="sort-toolbar">
