@@ -9,6 +9,7 @@ function Dashboard({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [category, setCategory] = useState('all');
+  const [search, setSearch] = useState('');
   const [editingExpense, setEditingExpense] = useState(null);
 
   useEffect(() => {
@@ -19,9 +20,9 @@ function Dashboard({ user }) {
     try {
       const data = await apiRequest('/expenses');
       setExpenses(data);
-      setLoading(false);
     } catch (err) {
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   }
@@ -30,6 +31,7 @@ function Dashboard({ user }) {
     try {
       const newExpense = await apiRequest('/expenses', 'POST', expenseData);
       setExpenses((prev) => [newExpense, ...prev]);
+      setError('');
     } catch (err) {
       setError(err.message);
     }
@@ -38,8 +40,11 @@ function Dashboard({ user }) {
   const handleUpdate = async (id, expenseData) => {
     try {
       const updated = await apiRequest(`/expenses/${id}`, 'PUT', expenseData);
-      setExpenses((prev) => prev.map((exp) => (exp._id === id ? updated : exp)));
+      setExpenses((prev) =>
+        prev.map((exp) => (exp._id === id ? updated : exp))
+      );
       setEditingExpense(null);
+      setError('');
     } catch (err) {
       setError(err.message);
     }
@@ -49,16 +54,27 @@ function Dashboard({ user }) {
     try {
       await apiRequest(`/expenses/${id}`, 'DELETE');
       setExpenses((prev) => prev.filter((exp) => exp._id !== id));
+      setError('');
     } catch (err) {
       setError(err.message);
     }
   };
 
   const visibleExpenses = expenses.filter((exp) => {
-    return category === 'all' || exp.category === category;
+    const matchCategory =
+      category === 'all' || exp.category === category;
+
+    const matchSearch = (exp.title || '')
+      .toLowerCase()
+      .includes(search.trim().toLowerCase());
+
+    return matchCategory && matchSearch;
   });
 
-  const total = visibleExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const total = visibleExpenses.reduce(
+    (sum, exp) => sum + Number(exp.amount || 0),
+    0
+  );
 
   if (loading) {
     return <h2 className="status-text">Loading...</h2>;
@@ -66,7 +82,9 @@ function Dashboard({ user }) {
 
   return (
     <div className="dashboard">
-      <h1>{user.role === 'admin' ? 'All Expenses' : 'My Expenses'}</h1>
+      <h1>
+        {user?.role === 'admin' ? 'All Expenses' : 'My Expenses'}
+      </h1>
 
       {error && <p className="error-text">{error}</p>}
 
@@ -79,10 +97,23 @@ function Dashboard({ user }) {
 
       <div className="dashboard-toolbar">
         <Filters category={category} setCategory={setCategory} />
+
+        <input
+          type="text"
+          placeholder="Search by expense title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-label="Search expenses by title"
+        />
+
         <h3>Total: ${total.toFixed(2)}</h3>
       </div>
 
-      <ExpenseList expenses={visibleExpenses} onEdit={setEditingExpense} onDelete={handleDelete} />
+      <ExpenseList
+        expenses={visibleExpenses}
+        onEdit={setEditingExpense}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }
